@@ -41,7 +41,7 @@ class DialogsMaterialThemingTests: XCTestCase {
     alert.addAction(action2)
     let action3: MDCAlertAction = MDCAlertAction(title: "", emphasis: .high)
     alert.addAction(action3)
-
+    
     alert.applyTheme(withScheme: scheme)
 
     // Color
@@ -60,8 +60,8 @@ class DialogsMaterialThemingTests: XCTestCase {
     XCTAssertEqual(alert.elevation, ShadowElevation.dialog)
 
     for action in alert.actions {
-      guard let button = alert.button(for: action),
-        let colorScheme = scheme.colorScheme
+      let colorScheme = scheme.colorScheme
+      guard let button = alert.button(for: action)
         else { continue }
       switch action.emphasis {
       case .low:
@@ -174,6 +174,7 @@ class DialogsMaterialThemingTests: XCTestCase {
   }
 
   func testMDCDialogPresentationControllerTheming() {
+    // Given
     let alert: MDCAlertController = MDCAlertController(title: "Title", message: "Message")
     guard let presentationController = alert.mdc_dialogPresentationController else {
       XCTAssert(false, "alert.mdc_dialogPresentationController should not be nil")
@@ -182,13 +183,86 @@ class DialogsMaterialThemingTests: XCTestCase {
     let scheme: MDCContainerScheme = MDCContainerScheme()
     let colorScheme = MDCSemanticColorScheme()
 
+    // When
     presentationController.applyTheme(withScheme: scheme)
 
+    // Then
     // Color
-    XCTAssertEqual(presentationController.scrimColor, colorScheme.primaryColor)
+    XCTAssertEqual(presentationController.scrimColor,
+                   colorScheme.onSurfaceColor.withAlphaComponent(0.32))
+
+    // Corner Radius
+    XCTAssertEqual(presentationController.dialogCornerRadius, kCornerRadius, accuracy: 0.001)
+
+    // Elevation
+    XCTAssertEqual(presentationController.dialogElevation, ShadowElevation.dialog)
+  }
+
+  func testMDCDialogPresentationControllerThemingWithCustomViewController() {
+    // Given
+    let dialog: UIViewController = UIViewController(nibName: nil, bundle: nil)
+    let transitionController = MDCDialogTransitionController()
+    dialog.modalPresentationStyle = .custom
+    dialog.transitioningDelegate = transitionController
+
+    // The presentation controller is the object under test. It should be defined correctly
+    // once an MDC transition delegate is assigned. We first verify is exists before testing it:
+    guard let presentationController = dialog.mdc_dialogPresentationController else {
+      XCTAssert(false, "alert.mdc_dialogPresentationController should not be nil")
+      return
+    }
+    let scheme: MDCContainerScheme = MDCContainerScheme()
+    let colorScheme = MDCSemanticColorScheme()
+
+    // When
+    presentationController.applyTheme(withScheme: scheme)
+
+    // Then
+    // Presentation
+    XCTAssertEqual(dialog.presentationController, presentationController)
+
+    // Presentation Color
+    XCTAssertEqual(presentationController.scrimColor,
+                   colorScheme.onSurfaceColor.withAlphaComponent(0.32))
+
+    // Presentation Corner Radius
+    XCTAssertEqual(presentationController.dialogCornerRadius, kCornerRadius, accuracy: 0.001)
+
+    // Presentation Elevation
+    XCTAssertEqual(presentationController.dialogElevation, ShadowElevation.dialog)
+  }
+
+  func testMDCDialogPresentationControllerThemingMatchesAlertControllerTheming() {
+    // Given
+    let alertThemedAlert: MDCAlertController = MDCAlertController(title: "Title",
+                                                                  message: "Message")
+    guard let alertThemedController = alertThemedAlert.mdc_dialogPresentationController
+      else {
+        XCTAssert(false, "alert.mdc_dialogPresentationController should not be nil")
+        return
+    }
+
+    let presentationThemedAlert: MDCAlertController = MDCAlertController(title: "Title",
+                                                                         message: "Message")
+    guard let presentationThemedController = presentationThemedAlert.mdc_dialogPresentationController
+      else {
+      XCTAssert(false, "alert.mdc_dialogPresentationController should not be nil")
+      return
+    }
+    let scheme: MDCContainerScheme = MDCContainerScheme()
+
+    // When
+    alertThemedAlert.applyTheme(withScheme: scheme)
+    presentationThemedController.applyTheme(withScheme: scheme)
+
+    // Then
+    // Color
+    XCTAssertEqual(presentationThemedController.scrimColor, alertThemedController.scrimColor)
 
     // Other properties
-    XCTAssertEqual(presentationController.dialogCornerRadius, kCornerRadius, accuracy: 0.001)
-    XCTAssertEqual(presentationController.dialogElevation, ShadowElevation.dialog)
+    XCTAssertEqual(presentationThemedController.dialogCornerRadius,
+                   alertThemedController.dialogCornerRadius, accuracy: 0.001)
+    XCTAssertEqual(presentationThemedController.dialogElevation,
+                   alertThemedController.dialogElevation)
   }
 }
