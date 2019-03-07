@@ -20,6 +20,8 @@ load(
     "mdc_extension_objc_library",
     "mdc_objc_library",
     "mdc_public_objc_library",
+    "mdc_snapshot_objc_library",
+    "mdc_snapshot_test",
     "mdc_unit_test_suite",
 )
 
@@ -79,8 +81,8 @@ mdc_examples_swift_library(
         ":BottomAppBar",
         ":ColorThemer",
         "//components/AppBar",
-        "//components/Buttons:ButtonThemer",
         "//components/Buttons",
+        "//components/Buttons:ButtonThemer",
         "//components/schemes/Color",
         "//components/schemes/Typography",
     ],
@@ -112,4 +114,16 @@ mdc_unit_test_suite(
     deps = [
         ":unit_test_sources",
     ],
+)
+
+mdc_snapshot_objc_library(
+    name = "snapshot_test_lib",
+    deps = [
+        ":BottomAppBar",
+    ],
+)
+
+mdc_snapshot_test(
+    name = "snapshot_tests",
+    deps = [":snapshot_test_lib"],
 )

@@ -38,11 +38,11 @@ mdc_public_objc_library(
         "//components/Ink",
         "//components/ShadowElevations",
         "//components/ShadowLayer",
+        "//components/ShapeLibrary",
+        "//components/Shapes",
         "//components/TextFields",
         "//components/Typography",
         "//components/private/Math",
-        "//components/private/ShapeLibrary",
-        "//components/private/Shapes",
         "@material_internationalization_ios//:MDFInternationalization",
     ],
 )
@@ -119,18 +119,18 @@ mdc_examples_objc_library(
     name = "ObjcExamples",
     deps = [
         ":Chips",
-        ":Theming",
         ":ShapeThemer",
+        ":Theming",
         ":TypographyThemer",
+        "//components/ShapeLibrary",
+        "//components/Shapes",
+        "//components/Slider",
+        "//components/Slider:ColorThemer",
+        "//components/TextFields",
         "//components/schemes/Color",
         "//components/schemes/Container",
         "//components/schemes/Shape",
         "//components/schemes/Typography",
-        "//components/private/ShapeLibrary",
-        "//components/private/Shapes",
-        "//components/Slider:ColorThemer",
-        "//components/Slider",
-        "//components/TextFields",
     ],
 )
 
@@ -185,8 +185,8 @@ mdc_objc_library(
         ":TypographyThemer",
         ":private",
         ":privateHeaders",
+        "//components/ShapeLibrary",
         "//components/TextFields:private",
-        "//components/private/ShapeLibrary",
     ],
 )
 
@@ -204,8 +204,8 @@ mdc_snapshot_objc_library(
         "tests/snapshot/resources/ChipsSnapshotTests.xcassets/ic_mask.imageset",
     ],
     deps = [
-      ":Chips",
-      ":Theming",
+        ":Chips",
+        ":Theming",
     ],
 )
 

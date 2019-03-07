@@ -26,7 +26,7 @@ static NSString *const kReusableIdentifierItem = @"cell";
 
 @interface DialogsAlertExampleViewController : MDCCollectionViewController
 @property(nonatomic, strong, nullable) NSArray *modes;
-@property(nonatomic, strong, nonnull) MDCContainerScheme *containerScheme;
+@property(nonatomic, strong, nonnull) id<MDCContainerScheming> containerScheme;
 @end
 
 @interface DialogsAlertExampleViewController (Supplemental)
@@ -35,10 +35,20 @@ static NSString *const kReusableIdentifierItem = @"cell";
 
 @implementation DialogsAlertExampleViewController
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    MDCContainerScheme *scheme = [[MDCContainerScheme alloc] init];
+    scheme.colorScheme =
+        [[MDCSemanticColorScheme alloc] initWithDefaults:MDCColorSchemeDefaultsMaterial201804];
+    _containerScheme = scheme;
+  }
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.containerScheme = [[MDCContainerScheme alloc] init];
   [self loadCollectionView:@[
     @"Show Long Alert", @"Alert (Dynamic Type enabled)", @"Overpopulated Alert"
   ]];
@@ -61,8 +71,7 @@ static NSString *const kReusableIdentifierItem = @"cell";
 }
 
 - (void)themeAlertController:(MDCAlertController *)alertController {
-  MDCContainerScheme *scheme = [[MDCContainerScheme alloc] init];
-  [alertController applyThemeWithScheme:scheme];
+  [alertController applyThemeWithScheme:self.containerScheme];
 }
 
 - (IBAction)didTapShowLongAlert {
@@ -114,36 +123,6 @@ static NSString *const kReusableIdentifierItem = @"cell";
                                                        NSLog(@"%@", @"OK pressed");
                                                      }];
   [materialAlertController addAction:okAction];
-
-  [self presentViewController:materialAlertController animated:YES completion:NULL];
-}
-
-- (IBAction)didTapNondismissingAlert {
-  NSString *titleString = @"This alert requires an action.";
-  NSString *messageString = @"You can't dismiss it by tapping the background. You must choose "
-                             "one of the actions available.";
-
-  MDCAlertController *materialAlertController =
-      [MDCAlertController alertControllerWithTitle:titleString message:messageString];
-  [self themeAlertController:materialAlertController];
-
-  MDCAlertAction *agreeAction = [MDCAlertAction actionWithTitle:@"AGREE"
-                                                        handler:^(MDCAlertAction *action) {
-                                                          NSLog(@"%@", @"AGREE pressed");
-                                                        }];
-  [materialAlertController addAction:agreeAction];
-
-  MDCAlertAction *disagreeAaction = [MDCAlertAction actionWithTitle:@"DISAGREE"
-                                                            handler:^(MDCAlertAction *action) {
-                                                              NSLog(@"%@", @"DISAGREE pressed");
-                                                            }];
-  [materialAlertController addAction:disagreeAaction];
-
-  // This code accesses the presentation controller and turns off dismiss on background tap.
-  MDCDialogPresentationController *presentationController =
-      materialAlertController.mdc_dialogPresentationController;
-  [presentationController applyThemeWithScheme:self.containerScheme];
-  presentationController.dismissOnBackgroundTap = NO;
 
   [self presentViewController:materialAlertController animated:YES completion:NULL];
 }
@@ -318,7 +297,7 @@ static NSString *const kReusableIdentifierItem = @"cell";
   return @{
     @"breadcrumbs" : @[ @"Dialogs", @"More Material Alert Examples" ],
     @"primaryDemo" : @NO,
-    @"presentable" : @YES,
+    @"presentable" : @NO,
   };
 }
 
